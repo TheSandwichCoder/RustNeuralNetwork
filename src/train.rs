@@ -1,5 +1,6 @@
 use crate::nn::NeuralNetwork;
 use crate::data::DataHandler;
+use crate::activation_functions::*;
 
 pub fn classify(outputs: &Vec<f32>) -> u8{
     let mut highest: f32 = -10000.0;
@@ -16,17 +17,20 @@ pub fn classify(outputs: &Vec<f32>) -> u8{
 }
 
 pub fn get_error(outputs: &Vec<f32>, label: u8) -> Vec<f32>{
-    let mut errors_vec = vec![0.0; outputs.len()];
-    let mut actual_vec = vec![0; outputs.len()];
+    // let mut errors_vec = vec![0.0; outputs.len()];
+    let mut actual_vec = vec![0.0; outputs.len()];
 
-    actual_vec[label as usize] = 1;
+    actual_vec[label as usize] = 1.0;
 
     // println!("label {}", label);
 
-    for i in 0..outputs.len(){
-        // println!("{} {}", outputs[i], actual_vec[i]);
-        errors_vec[i] = outputs[i] - actual_vec[i] as f32;
-    }
+    let probs = softmax(&outputs);
+    let errors_vec = cross_entropy_derivative(&probs, &actual_vec);
+
+    // for i in 0..outputs.len(){
+    //     // println!("{} {}", outputs[i], actual_vec[i]);
+    //     errors_vec[i] = outputs[i] - actual_vec[i] as f32;
+    // }
 
     return errors_vec;
 }
@@ -83,14 +87,14 @@ pub fn train_nn(model: &mut NeuralNetwork, data_handler: &DataHandler, n_epochs:
             // println!("errors {:?}", errors);
             
 
-            if prediction != data.label{
-                let errors = get_error(&output, data.label);
+            // if prediction != data.label{
+            let errors = get_error(&output, data.label);
 
-                
-                // println!("errors {:?}", errors);
+            
+            // println!("errors {:?}", errors);
 
-                model.backward(errors);
-            }
+            model.backward(errors);
+            // }
 
             // model.forward(data.val.clone());
 
@@ -105,7 +109,7 @@ pub fn train_nn(model: &mut NeuralNetwork, data_handler: &DataHandler, n_epochs:
         if epoch % epoch_batch == 0{
             let (test_acc, train_acc) = test(model, data_handler);
 
-            println!("test {}% train {}%", test_acc * 100.0, train_acc * 100.0);
+            println!("epoch {} test {}% train {}%", epoch + 1, test_acc * 100.0, train_acc * 100.0);
         }
     }
 }

@@ -16,11 +16,12 @@ fn main() {
     data_handler.separate(0.8);
 
 
-    let mut nn = NeuralNetwork::new(vec![784, 50, 10]);
+    // let mut nn = NeuralNetwork::new(vec![784, 100, 30, 10]);
+    let mut nn = NeuralNetwork::new(vec![784, 100, 10]);
 
     // nn.show_info();
     
-    train_nn(&mut nn, &data_handler, 200, 1);
+    train_nn(&mut nn, &data_handler, 20, 1);
 
     // nn.forward(vec![0.1, 0.2]);
     nn.show_info();

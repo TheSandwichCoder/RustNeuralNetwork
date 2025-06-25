@@ -87,7 +87,7 @@ impl Perceptron{
     }
 }
 
-const lr: f32 = -0.0001;
+const lr: f32 = -0.01;
 const mr: f32 = -0.5;
 
 pub struct NeuralNetwork{
