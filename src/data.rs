@@ -12,13 +12,28 @@ pub struct DataVal{
 } 
 
 impl DataVal{
-    pub fn new(x: f32, y: f32, label: u8) -> DataVal{
+    // pub fn new(x: f32, y: f32, label: u8) -> DataVal{
+    //     return DataVal{
+    //         val : vec![x, y],
+    //         label : label
+    //     };
+    // }
+
+    pub fn direct(val: Vec<f32>, label: u8) -> DataVal{
         return DataVal{
-            val : vec![x, y],
-            label : label
-        };
+            val: val,
+            label: label,
+        }
     }
 }
+
+fn record_to_vec(record: &StringRecord, count: usize) -> Vec<f32> {
+    record.iter()
+        .take(count)
+        .map(|field| field.parse::<f32>().unwrap())  // or handle parse errors
+        .collect()
+}
+
 
 pub struct DataHandler{
     pub main_data: Vec<DataVal>,
@@ -43,11 +58,13 @@ impl DataHandler{
             
             let record: StringRecord= result.unwrap();
 
-            let x = record[0].parse::<f32>().unwrap();
-            let y = record[1].parse::<f32>().unwrap();
-            let label = record[2].parse::<u8>().unwrap();
+            let values = record_to_vec(&record, 784);
 
-            let dataval: DataVal = DataVal::new(x/500.0, y/500.0, label);
+            // let x = record[0].parse::<f32>().unwrap();
+            // let y = record[1].parse::<f32>().unwrap();
+            let label = record[784].parse::<u8>().unwrap();
+
+            let dataval: DataVal = DataVal::direct(values, label);
 
             main_data.push(dataval);
         }

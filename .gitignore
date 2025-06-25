@@ -1,1 +1,7 @@
 /target
+datasets/datasets/mnist.csv
+datasets/datasets/edited_classify10.csv
+datasets/datasets/edited_classify14.csv
+datasets/datasets/edited_classify4.csv
+datasets/datasets/edited_classify7.csv
+datasets/mnist.csv
