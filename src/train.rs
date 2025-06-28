@@ -71,39 +71,18 @@ pub fn train_nn(model: &mut NeuralNetwork, data_handler: &DataHandler, n_epochs:
         for data_i in 0..data_handler.train_length{
             let data = &data_handler.train_data[data_i];
 
-            // println!("data: {:?}", data.val);
-
             model.forward(data.val.clone());
 
             let mut output = model.get_outputs();
 
-            // println!("output {:?}", output);
-
             let prediction = classify(&output);
-            // println!("{} {}", prediction, data.label);
-
-            // let errors = get_error(&output, data.label);
-
-            // println!("errors {:?}", errors);
             
-
-            // if prediction != data.label{
             let errors = get_error(&output, data.label);
-
             
-            // println!("errors {:?}", errors);
-
             model.backward(errors);
-            // }
-
-            // model.forward(data.val.clone());
-
-            // let mut output = model.get_outputs();
-            // println!("{:?}",output);
-
-            // return; 
-
-            // model.show_info();
+            if data_i % 1000 == 0{
+                println!("{}", data_i);
+            }
         }
 
         if epoch % epoch_batch == 0{
