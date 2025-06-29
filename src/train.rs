@@ -66,7 +66,9 @@ pub fn test(model: &mut NeuralNetwork, data: &DataHandler) -> (f32, f32){
     return (n_test_correct as f32 / data.test_length as f32, n_train_correct as f32 / data.train_length as f32);
 }
 
-pub fn train_nn(model: &mut NeuralNetwork, data_handler: &DataHandler, n_epochs: u16, epoch_batch: u16){
+pub fn train_nn(model: &mut NeuralNetwork, data_handler: &DataHandler, n_epochs: u16, epoch_batch_size: u16){
+    let epoch_batch_scale = 1.0 / epoch_batch_size as f32;
+    
     for epoch in 0..n_epochs{
         for data_i in 0..data_handler.train_length{
             let data = &data_handler.train_data[data_i];
@@ -80,15 +82,21 @@ pub fn train_nn(model: &mut NeuralNetwork, data_handler: &DataHandler, n_epochs:
             let errors = get_error(&output, data.label);
             
             model.backward(errors);
+
+
             if data_i % 1000 == 0{
                 println!("{}", data_i);
             }
+
+            if data_i as u16 % epoch_batch_size == epoch_batch_size - 1{
+                model.update_weights(epoch_batch_scale);
+                model.reset_gradients();
+            }
         }
 
-        if epoch % epoch_batch == 0{
-            let (test_acc, train_acc) = test(model, data_handler);
+        let (test_acc, train_acc) = test(model, data_handler);
 
-            println!("epoch {} test {}% train {}%", epoch + 1, test_acc * 100.0, train_acc * 100.0);
-        }
+        println!("epoch {} test {}% train {}%", epoch + 1, test_acc * 100.0, train_acc * 100.0);
+
     }
 }

@@ -17,11 +17,11 @@ fn main() {
 
 
     // let mut nn = NeuralNetwork::new(vec![784, 100, 30, 10]);
-    let mut nn = NeuralNetwork::new(vec![784, 100, 50, 10]);
+    let mut nn = NeuralNetwork::new(vec![784, 100, 10]);
 
     // nn.show_info();
     
-    train_nn(&mut nn, &data_handler, 100, 1);
+    train_nn(&mut nn, &data_handler, 100, 100);
 
     // nn.forward(vec![0.1, 0.2]);
     nn.show_info();

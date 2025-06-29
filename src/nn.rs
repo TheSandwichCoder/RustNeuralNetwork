@@ -77,14 +77,14 @@ impl Perceptron{
         self.bias_gradient = 0.0;
     }
 
-    pub fn update_weights(&mut self){
+    pub fn update_weights(&mut self, scale: f32){
         for weight_i in 0..self.n_inputs{
-            self.momentum[weight_i] = mr * self.momentum[weight_i] + self.gradients[weight_i] * lr;
+            self.momentum[weight_i] = mr * self.momentum[weight_i] + self.gradients[weight_i] * lr * scale;
 
             self.weights[weight_i] += self.momentum[weight_i];
         }
 
-        self.bias_momentum = self.bias_momentum * mr + self.bias_gradient * lr;
+        self.bias_momentum = self.bias_momentum * mr + self.bias_gradient * lr * scale;
         self.bias += self.bias_momentum
     }
 
@@ -110,7 +110,7 @@ impl Perceptron{
     }
 }
 
-const lr: f32 = -0.0005; // 0.0003
+const lr: f32 = -0.05; // 0.0003
 const mr: f32 = 0.9;
 
 pub struct NeuralNetwork{
@@ -216,15 +216,26 @@ impl NeuralNetwork{
         fs::write("neuralnets/nn1.txt", file_txt);
     }
 
-    pub fn backward(&mut self, errors: Vec<f32>){
-        
+    pub fn reset_gradients(&mut self){
         // resets all the gradients
         for layer_i in 1..self.n_layers{
             for perc_i in 0..self.layer_dim[layer_i]{
                 self.perc_layers[layer_i - 1][perc_i].reset_gradients();
             }
         }
+    }
 
+    pub fn update_weights(&mut self, scale: f32){
+        // updates all the weights
+        for layer_i in 1..self.n_layers{
+            for perc_i in 0..self.layer_dim[layer_i]{
+                self.perc_layers[layer_i - 1][perc_i].update_weights(scale);
+            }
+        }
+    }
+
+    pub fn backward(&mut self, errors: Vec<f32>){
+    
         // main back propogation loop
         for layer_i in (1..self.n_layers).rev(){
             let perc_layer = &mut self.perc_layers[layer_i -  1];
@@ -260,13 +271,6 @@ impl NeuralNetwork{
                 for part_deriv_i in 0..curr_layer_length{
                     self.part_derivs[layer_i - 1][perc_i][part_deriv_i] = part_deriv[part_deriv_i];
                 }
-            }
-        }
-
-        // resets all the gradients
-        for layer_i in 1..self.n_layers{
-            for perc_i in 0..self.layer_dim[layer_i]{
-                self.perc_layers[layer_i - 1][perc_i].update_weights();
             }
         }
     }
