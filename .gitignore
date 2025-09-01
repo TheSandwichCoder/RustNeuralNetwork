@@ -5,3 +5,8 @@ datasets/datasets/edited_classify14.csv
 datasets/datasets/edited_classify4.csv
 datasets/datasets/edited_classify7.csv
 datasets/mnist.csv
+datasets/mnist_letters.csv
+datasets/mnist_letters_default.csv
+neuralnets/nn_read.txt
+neuralnets/nn_write.txt
+neuralnets/nn1.txt

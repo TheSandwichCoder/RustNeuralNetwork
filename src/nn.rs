@@ -1,7 +1,7 @@
 use rand::Rng;
 use std::fs;
 use crate::activation_functions::*;
-
+use crate::functions::*;
 
 fn activation(x: f32, is_activation: bool) -> f32{
     if !is_activation{
@@ -110,7 +110,7 @@ impl Perceptron{
     }
 }
 
-const lr: f32 = -0.05; // 0.0003
+const lr: f32 = -0.0003; // 0.0003
 const mr: f32 = 0.9;
 
 pub struct NeuralNetwork{
@@ -151,6 +151,48 @@ impl NeuralNetwork{
             // initialises the array of perceptrons
             for perc_i in 0..nn.layer_dim[layer_i]{
                 nn.perc_layers[layer_i - 1].push(Perceptron::new(nn.layer_dim[layer_i - 1], is_activation))
+            }
+        }
+
+        return nn;
+    }
+
+    pub fn load(filepath: &str) -> NeuralNetwork{
+        let contents = fs::read_to_string(&filepath)
+        .unwrap();
+
+        let nn_lines = split_string(&contents, '\n');
+
+        let dim_str = split_string(&nn_lines[0], ' ');
+
+        let dim : Vec<usize> = dim_str.into_iter()
+        .map(|s| s.parse::<usize>().unwrap())
+        .collect();
+
+        let dim_n = dim.len();
+
+        let mut nn = NeuralNetwork::new(dim.clone());
+
+        let mut line_count = 1;
+
+        for perc_layer_i in 1..dim_n{
+            for perc_i in 0..dim[perc_layer_i]{
+                let perc_txt = &nn_lines[line_count];
+                let weights_and_bias_str = split_string(perc_txt, ' ');
+
+                let weights_and_bias: Vec<f32> = weights_and_bias_str.into_iter()
+                    .map(|s| s.parse::<f32>().unwrap())
+                    .collect();
+
+                let n_inputs = weights_and_bias.len();
+
+                for i in 0..(n_inputs - 1){
+                    nn.perc_layers[perc_layer_i - 1][perc_i].weights[i] = weights_and_bias[i];
+                }
+
+                nn.perc_layers[perc_layer_i - 1][perc_i].bias = weights_and_bias[n_inputs - 1];
+
+                line_count += 1;
             }
         }
 
@@ -213,7 +255,7 @@ impl NeuralNetwork{
             }
         }
 
-        fs::write("neuralnets/nn1.txt", file_txt);
+        fs::write("neuralnets/nn_write.txt", file_txt);
     }
 
     pub fn reset_gradients(&mut self){

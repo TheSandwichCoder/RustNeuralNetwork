@@ -62,7 +62,8 @@ impl DataHandler{
 
             // let x = record[0].parse::<f32>().unwrap();
             // let y = record[1].parse::<f32>().unwrap();
-            let label = record[784].parse::<u8>().unwrap();
+            // let label = record[784].parse::<u8>().unwrap();
+            let label = record[784].parse::<u8>().unwrap() - 1;
 
             let dataval: DataVal = DataVal::direct(values, label);
 
